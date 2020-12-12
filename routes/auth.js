@@ -10,6 +10,7 @@ const saltRounds = 10;
 // Require the User model in order to interact with the database
 const User = require("../models/User.model");
 const Session = require("../models/Session.model");
+const Menu = require("../models/Menu.model");
 
 // Require necessary middlewares in order to control access to specific routes
 const shouldNotBeLoggedIn = require("../middlewares/shouldNotBeLoggedIn");
@@ -49,19 +50,6 @@ router.post("/signup", shouldNotBeLoggedIn, (req, res) => {
     });
   }
 
-  //   ! This use case is using a regular expression to control for special characters and min length
-  /*
-  const regex = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}/;
-
-  if (!regex.test(password)) {
-    return res.status(400).json( {
-      errorMessage:
-        "Password needs to have at least 8 chars and must contain at least one number, one lowercase and one uppercase letter.",
-    });
-  }
-  */
-
-  // Search the database for a user with the username submitted in the form
   User.findOne({ username }).then((found) => {
     // If the user is found, send the message username is taken
     if (found) {
@@ -80,6 +68,16 @@ router.post("/signup", shouldNotBeLoggedIn, (req, res) => {
         });
       })
       .then((user) => {
+        console.log("This is the user received in auth", user);
+        Menu.create({
+          dishes: [],
+          user: user._id,
+        })
+          .then((menu) => {
+            console.log(menu);
+          })
+          .catch((err) => console.log(err));
+
         Session.create({
           user: user._id,
           createdAt: Date.now(),
