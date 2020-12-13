@@ -82,7 +82,7 @@ router.get("/getMenu", (req, res, next) => {
 
     .populate("dishes")
     .then((menu) => {
-      console.log("This is the found Menu", menu);
+      // console.log("This is the found Menu", menu);
       res.json(menu);
     });
 });

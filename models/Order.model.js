@@ -4,7 +4,12 @@ const ObjectId = Schema.Types.ObjectId;
 const orderSchema = new Schema({
   table: Number,
 
-  dishesOrdered: [{ type: ObjectId, ref: "Dish" }, { units: Number }],
+  dishesOrdered: [
+    {
+      dishType: { type: ObjectId, ref: "Dish" },
+      units: Number,
+    },
+  ],
   totalItems: Number,
   totalPrice: Number,
 });
