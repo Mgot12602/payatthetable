@@ -2,6 +2,7 @@ const router = require("express").Router();
 const Dish = require("../models/Dish.model");
 const Menu = require("../models/Menu.model");
 const authRoutes = require("./auth");
+const orderRoutes = require("./order");
 
 /* GET home page */
 router.get("/", (req, res, next) => {
@@ -9,7 +10,16 @@ router.get("/", (req, res, next) => {
 });
 
 router.post("/newDish", (req, res, next) => {
-  const { name, description, tags, format, picture_url, stock } = req.body;
+  const {
+    name,
+    description,
+    tags,
+    format,
+    picture_url,
+    stock,
+    type,
+    price,
+  } = req.body;
   Dish.create({
     name,
     description,
@@ -17,6 +27,8 @@ router.post("/newDish", (req, res, next) => {
     format,
     picture_url,
     stock,
+    type,
+    price,
   }).then((createdDish) => {
     console.log("created Dish", createdDish);
     res.json(createdDish);
@@ -34,6 +46,8 @@ router.post("/addDishToMenu", (req, res, next) => {
   //   .then((dishToAdd) => {
   //     console.log("Added Dish", dishToAdd);
   console.log("req.body.user", req.body.user._id);
+  console.log("req.body.filteredDish[0]._id", req.body.filteredDish[0]._id);
+
   // Menu.find({ user: req.body.user._id }).then((foundMenu) => {
   // console.log("found this menu", foundMenu);
   Menu.updateOne(
@@ -42,8 +56,14 @@ router.post("/addDishToMenu", (req, res, next) => {
     { new: true }
   )
     .then((newAndUpdatedMenu) => {
-      console.log("This is the updated menu", newAndUpdatedMenu);
-      res.json(newAndUpdatedMenu);
+      // console.log("This is the updated menu", newAndUpdatedMenu);
+      // res.json(newAndUpdatedMenu.data);
+      Menu.find({ user: req.body.user._id })
+        .populate("dishes")
+        .then((foundMenu) => {
+          // console.log("This is the updated Menu", foundMenu);
+          res.json(foundMenu);
+        });
     })
     .catch((err) => console.log(err));
   // });
@@ -56,6 +76,16 @@ router.post("/addDishToMenu", (req, res, next) => {
   //res.json(createdDish);
 });
 //
+
+router.get("/getMenu", (req, res, next) => {
+  Menu.find({})
+
+    .populate("dishes")
+    .then((menu) => {
+      console.log("This is the found Menu", menu);
+      res.json(menu);
+    });
+});
 
 router.get("/getAllDishes", (req, res, next) => {
   Dish.find({}).then((allDishes) => {
@@ -72,6 +102,8 @@ router.get("/getAllDishes", (req, res, next) => {
 
 //   res.json(allQuestions);
 // })
+
+router.use("/order", orderRoutes);
 
 router.use("/auth", authRoutes);
 

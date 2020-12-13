@@ -7,6 +7,8 @@ const dishSchema = new Schema({
   format: String,
   picture_url: String,
   stock: String,
+  type: String,
+  price: Number,
 });
 
 const Dish = model("Dish", dishSchema);
