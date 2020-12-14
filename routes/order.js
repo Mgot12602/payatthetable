@@ -129,5 +129,20 @@ router.post("/addDishToOrder", (req, res, next) => {
 //     return el.dishType == dishId;
 //   })
 // );
+router.post("/getTotal", (req, res, next) => {
+  console.log("Received Request in get ServerSide", req.body);
+  console.log("req.body", req.body.table);
+
+  Order.find({ table: req.body.table })
+    .populate("dishesOrdered.dishType")
+    .then((Order) => {
+      console.log("this is the returned Order from backend", Order[0]);
+      const total = Order[0].dishesOrdered.reduce((acc, el) => {
+        return acc + el.units * el.dishType.price;
+      }, 0);
+      console.log("total", total);
+      res.json(total);
+    });
+});
 
 module.exports = router;
