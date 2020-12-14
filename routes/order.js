@@ -25,7 +25,7 @@ router.post("/getOrder", (req, res, next) => {
   console.log("req.body", req.body.table);
 
   Order.find({ table: req.body.table })
-    .populate("dishes")
+    .populate("dishesOrdered.dishType")
     .then((Order) => {
       console.log("this is the returned Order from backend", Order);
       res.json(Order);
@@ -99,6 +99,7 @@ router.post("/addDishToOrder", (req, res, next) => {
     }
     console.log("just before updateOne");
     Order.updateOne(
+      //findoneandupdate
       { _id: foundOrder[0]._id, "dishesOrdered.dishType": dishId },
       { $inc: { "dishesOrdered.$.units": 1, totalItems: 1 } },
       { new: true }
@@ -114,7 +115,7 @@ router.post("/addDishToOrder", (req, res, next) => {
               "newAndUpdatedOrder which existed-->",
               newAndUpdatedOrder
             );
-            res.json(newAndUpdatedOrder);
+            res.json(newAndUpdatedOrder[0]);
           });
       });
   });
