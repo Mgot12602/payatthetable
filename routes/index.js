@@ -3,6 +3,7 @@ const Dish = require("../models/Dish.model");
 const Menu = require("../models/Menu.model");
 const authRoutes = require("./auth");
 const orderRoutes = require("./order");
+const paymentRoutes = require("./payment");
 
 /* GET home page */
 router.get("/", (req, res, next) => {
@@ -106,5 +107,7 @@ router.get("/getAllDishes", (req, res, next) => {
 router.use("/order", orderRoutes);
 
 router.use("/auth", authRoutes);
+
+router.use("/payment", paymentRoutes);
 
 module.exports = router;
