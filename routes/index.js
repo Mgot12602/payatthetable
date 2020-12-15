@@ -78,6 +78,33 @@ router.post("/addDishToMenu", (req, res, next) => {
 });
 //
 
+router.post("/removeDishFromMenu", (req, res, next) => {
+  // const { id } = req.body[0]._id;
+
+  console.log("req.body", req.body);
+  // console.log("id", req.body[0]._id);
+  // Dish.findById(req.body[0]._id)
+  //   .then((dishToAdd) => {
+  //     console.log("Added Dish", dishToAdd);
+  console.log("req.body.user", req.body.user._id);
+  console.log("req.body.filteredDish[0]._id", req.body.filteredDish[0]._id);
+
+  // Menu.find({ user: req.body.user._id }).then((foundMenu) => {
+  // console.log("found this menu", foundMenu);
+  Dish.findByIdAndRemove(req.body.filteredDish[0]._id)
+    .then((newAndUpdatedMenu) => {
+      console.log("This is the updated menu", newAndUpdatedMenu);
+      // res.json(newAndUpdatedMenu.data);
+      Menu.find({ user: req.body.user._id })
+        .populate("dishes")
+        .then((foundMenu) => {
+          console.log("This is the updated Menu", foundMenu);
+          res.json(foundMenu);
+        });
+    })
+    .catch((err) => console.log(err));
+});
+
 router.get("/getMenu", (req, res, next) => {
   Menu.find({})
 
