@@ -14,6 +14,7 @@ router.post("/addNewOrder", (req, res, next) => {
     dishesOrdered: [],
     totalItems: 0,
     totalPrice: 0,
+    paid: false,
   }).then((createdOrder) => {
     console.log(createdOrder);
     res.json(createdOrder);
@@ -142,6 +143,19 @@ router.post("/getTotal", (req, res, next) => {
       }, 0);
       console.log("total", total);
       res.json(total);
+    });
+});
+
+router.post("/changeToPaid", (req, res, next) => {
+  Order.findOneAndUpdate(
+    { table: req.body.table },
+    { $set: { paid: true } },
+    { new: true }
+  )
+    .populate("dishesOrdered.dishType")
+    .then((newAndPaidOrder) => {
+      console.log("newandPaidOrder", newAndPaidOrder);
+      res.json([newAndPaidOrder]);
     });
 });
 

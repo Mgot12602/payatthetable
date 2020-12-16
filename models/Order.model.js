@@ -12,6 +12,7 @@ const orderSchema = new Schema({
   ],
   totalItems: Number,
   totalPrice: Number,
+  paid: Boolean,
 });
 
 const Order = model("Order", orderSchema);
