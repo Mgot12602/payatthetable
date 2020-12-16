@@ -15,6 +15,7 @@ router.post("/addNewOrder", (req, res, next) => {
     totalItems: 0,
     totalPrice: 0,
     paid: false,
+    cleared: false,
   }).then((createdOrder) => {
     console.log(createdOrder);
     res.json(createdOrder);
@@ -25,7 +26,7 @@ router.post("/getOrder", (req, res, next) => {
   console.log("Received Request in getOrder ServerSide", req.body);
   console.log("req.body", req.body.table);
 
-  Order.find({ table: req.body.table })
+  Order.find({ table: req.body.table, cleared: false })
     .populate("dishesOrdered.dishType")
     .then((Order) => {
       console.log("this is the returned Order from backend", Order);
@@ -42,7 +43,7 @@ router.post("/getOrder", (req, res, next) => {
 router.post("/addDishToOrder", (req, res, next) => {
   const { dishId, table } = req.body;
   console.log(`This is the DishId ${dishId}, this is the table ${table}`);
-  Order.find({ table: req.body.table }).then((foundOrder) => {
+  Order.find({ table: req.body.table, cleared: false }).then((foundOrder) => {
     console.log("this is the found order", foundOrder[0]);
     // console.log("this is the found order object", foundOrder[0]);
     // if (foundOrder[0].dishesOrdered.includes(dishId)) {
@@ -134,7 +135,7 @@ router.post("/getTotal", (req, res, next) => {
   console.log("Received Request in get ServerSide", req.body);
   console.log("req.body", req.body.table);
 
-  Order.find({ table: req.body.table })
+  Order.find({ table: req.body.table, cleared: false })
     .populate("dishesOrdered.dishType")
     .then((Order) => {
       console.log("this is the returned Order from backend", Order[0]);
@@ -148,8 +149,30 @@ router.post("/getTotal", (req, res, next) => {
 
 router.post("/changeToPaid", (req, res, next) => {
   Order.findOneAndUpdate(
-    { table: req.body.table },
+    { table: req.body.table, cleared: false },
     { $set: { paid: true } },
+    { new: true }
+  )
+    .populate("dishesOrdered.dishType")
+    .then((newAndPaidOrder) => {
+      console.log("newandPaidOrder", newAndPaidOrder);
+      res.json([newAndPaidOrder]);
+    });
+});
+
+router.get("/getAllOrders", (req, res, next) => {
+  Order.find({ paid: true, cleared: false })
+    .populate("dishesOrdered.dishType")
+    .then((allOrders) => {
+      console.log("Look here Marc", allOrders);
+      res.json(allOrders);
+    });
+});
+
+router.post("/clearTable", (req, res, next) => {
+  Order.findOneAndUpdate(
+    { table: req.body.table },
+    { $set: { cleared: true } },
     { new: true }
   )
     .populate("dishesOrdered.dishType")
