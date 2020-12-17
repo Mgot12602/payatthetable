@@ -182,4 +182,19 @@ router.post("/clearTable", (req, res, next) => {
     });
 });
 
+router.post("/removeDishFromOrder", (req, res, next) => {
+  console.log("removeDishFromOrder req.body: ", req.body);
+  // Order.findById(
+  Order.findByIdAndUpdate(
+    req.body.orderId,
+    { $pull: { dishesOrdered: { dishType: req.body.dishId } } },
+    { new: true }
+  )
+    .populate("dishesOrdered.dishType")
+    .then((newAndRemovedDishOrder) => {
+      console.log("newAndRemovedDishOrder", newAndRemovedDishOrder);
+      res.json([newAndRemovedDishOrder]);
+    });
+});
+
 module.exports = router;
