@@ -187,7 +187,9 @@ router.post("/removeDishFromOrder", (req, res, next) => {
   // Order.findById(
   Order.findByIdAndUpdate(
     req.body.orderId,
-    { $pull: { dishesOrdered: { dishType: req.body.dishId } } },
+    {
+      $pull: { dishesOrdered: { dishType: req.body.dishId } },
+    },
     { new: true }
   )
     .populate("dishesOrdered.dishType")
