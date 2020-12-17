@@ -171,7 +171,7 @@ router.get("/getAllOrders", (req, res, next) => {
 
 router.post("/clearTable", (req, res, next) => {
   Order.findOneAndUpdate(
-    { table: req.body.table },
+    { table: req.body.table, paid: true, cleared: false },
     { $set: { cleared: true } },
     { new: true }
   )
